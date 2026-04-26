@@ -1,0 +1,7 @@
+,Shipping,Returns,Tracking,Login,Profile,Account
+Shipping,20,17,16,2,1,1
+Returns,17,20,14,2,1,2
+Tracking,16,14,20,1,2,1
+Login,2,2,1,20,15,16
+Profile,1,1,2,15,20,14
+Account,1,2,1,16,14,20
