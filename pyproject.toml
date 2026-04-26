@@ -1,0 +1,54 @@
+[tool.poetry]
+name = "respondent_similarity"
+version = "0.0.1"
+description = "Python utilities for calculating respondent similarity based on survey responses."
+authors = ["Reuben Brasher <rkbrasher@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "respondent_similarity"}]
+include = ["data/*", "README.md", "respondent_similarity/tests/test_data/*"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.2"
+numpy = "^2.0"
+scipy = "^1.14"
+scikit-learn = "^1.5"
+matplotlib = "^3.10.7"
+openpyxl = "^3.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.0.1"
+ruff = "^0.15.11"
+coverage = "^7.12.0"
+
+[tool.poetry.group.notebook.dependencies]
+jupyter = "^1.1.1"
+jupyterlab = "^4.4.8"
+seaborn = "^0.13.2"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"_version.py" = ["F841"]
+
+[tool.coverage.run]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
