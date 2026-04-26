@@ -28,3 +28,27 @@ def plot_dendrogram(similarity, ax=None, method="average", title=None):
         ax.set_title(title)
     ax.set_ylabel("Distance")
     return fig, ax
+
+
+def plot_similarity_matrix(similarity, ax=None, title=None, cmap="viridis"):
+    """Render a similarity matrix as a labeled heatmap.
+
+    Cells are colored on a fixed [0, 1] scale so heatmaps from different
+    datasets are directly comparable. Card labels from the DataFrame
+    index/columns appear on the axes; a colorbar is added so absolute
+    values are readable. Returns the (figure, axes) pair.
+    """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(6, 5))
+    else:
+        fig = ax.figure
+
+    image = ax.imshow(similarity.values, vmin=0.0, vmax=1.0, cmap=cmap)
+    ax.set_xticks(range(len(similarity.columns)))
+    ax.set_yticks(range(len(similarity.index)))
+    ax.set_xticklabels(list(similarity.columns), rotation=45, ha="right")
+    ax.set_yticklabels(list(similarity.index))
+    fig.colorbar(image, ax=ax)
+    if title is not None:
+        ax.set_title(title)
+    return fig, ax
