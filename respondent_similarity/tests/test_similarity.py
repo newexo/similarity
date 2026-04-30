@@ -2,7 +2,30 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from respondent_similarity.similarity import normalize
+from respondent_similarity.similarity import infer_n_participants, normalize
+
+
+class TestInferNParticipants:
+    def test_returns_uniform_diagonal_value(self, cooccurrence_counts):
+        assert infer_n_participants(cooccurrence_counts) == 20
+
+    def test_works_on_minimal_matrix(self):
+        counts = pd.DataFrame([[6, 2], [2, 6]], index=["A", "B"], columns=["A", "B"])
+        assert infer_n_participants(counts) == 6
+
+    def test_rejects_empty_diagonal(self, cooccurrence_counts_empty_diagonal):
+        with pytest.raises(ValueError, match="Cannot infer n_participants"):
+            infer_n_participants(cooccurrence_counts_empty_diagonal)
+
+    def test_rejects_zero_diagonal(self):
+        zeros = pd.DataFrame([[0, 0], [0, 0]], index=["A", "B"], columns=["A", "B"])
+        with pytest.raises(ValueError, match="Cannot infer n_participants"):
+            infer_n_participants(zeros)
+
+    def test_rejects_non_uniform_diagonal(self):
+        ragged = pd.DataFrame([[20, 5], [5, 10]], index=["A", "B"], columns=["A", "B"])
+        with pytest.raises(ValueError, match="Cannot infer n_participants"):
+            infer_n_participants(ragged)
 
 
 class TestNormalize:
@@ -40,21 +63,22 @@ class TestNormalize:
         pd.testing.assert_frame_equal(full_sim, empty_sim)
 
     def test_explicit_n_participants_overrides_diagonal(self, cooccurrence_counts):
-        # Even with a usable diagonal, an explicit n_participants is honored.
         explicit = normalize(cooccurrence_counts, n_participants=10)
         np.testing.assert_allclose(explicit.values.diagonal(), 1.0)
         # Off-diagonal is now /10 rather than /20.
         np.testing.assert_allclose(explicit.values[0, 1], 17 / 10)
 
-    def test_rejects_non_inferable_diagonal_when_n_omitted(self):
-        ragged = pd.DataFrame([[20, 5], [5, 10]], index=["A", "B"], columns=["A", "B"])
-        with pytest.raises(ValueError, match="Cannot infer n_participants"):
-            normalize(ragged)
+    def test_inference_used_when_n_omitted(self, cooccurrence_counts):
+        # Integration: normalize delegates to infer_n_participants when
+        # n_participants is not supplied.
+        np.testing.assert_allclose(
+            normalize(cooccurrence_counts).values,
+            normalize(cooccurrence_counts, n_participants=20).values,
+        )
 
-    def test_rejects_zero_diagonal_when_n_omitted(self):
-        empty = pd.DataFrame([[0, 0], [0, 0]], index=["A", "B"], columns=["A", "B"])
+    def test_propagates_inference_failure(self, cooccurrence_counts_empty_diagonal):
         with pytest.raises(ValueError, match="Cannot infer n_participants"):
-            normalize(empty)
+            normalize(cooccurrence_counts_empty_diagonal)
 
     def test_rejects_non_positive_n_participants(self, cooccurrence_counts):
         with pytest.raises(ValueError, match="n_participants must be positive"):
