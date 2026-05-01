@@ -1,4 +1,5 @@
 import matplotlib
+import pandas as pd
 import pytest
 
 from respondent_similarity import directories
@@ -6,6 +7,11 @@ from respondent_similarity.loaders import load_cooccurrence_csv
 from respondent_similarity.similarity import normalize
 
 matplotlib.use("Agg")
+
+
+@pytest.fixture
+def responses():
+    return pd.read_csv(directories.test_data("responses.csv"))
 
 
 @pytest.fixture
