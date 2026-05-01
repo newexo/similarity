@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "respondent_similarity"
-version = "0.1.1"
+version = "0.1.2"
 description = "Python utilities for calculating respondent similarity based on survey responses."
 authors = ["Reuben Brasher <rkbrasher@gmail.com>"]
 license = "MIT"
